@@ -61,9 +61,9 @@ def CalcTqmean(Qvalues):
        duration rather than the volume of streamflow. The routine returns
        the Tqmean value for the given data array."""
     
-    a=Qvalues.dropna()
+    Qvalues=Qvalues.dropna()
     
-    Tqmean=((a>a.mean()).sum())/len(a) 
+    Tqmean=(Qvalues>Qvalues.mean()).sum()/len(Qvalues) 
     return ( Tqmean )
 
 def CalcRBindex(Qvalues):
@@ -87,8 +87,7 @@ def Calc7Q(Qvalues):
        that year.  The routine returns the 7Q (7-day low flow) value
        for the given data array."""
     Qvalues=Qvalues.dropna()
-    val7Q=min(Qvalues.resample('7D').mean())
- 
+    val7Q=(Qvalues.rolling(7).mean()).min() 
     return ( val7Q )
 
 def CalcExceed3TimesMedian(Qvalues):
