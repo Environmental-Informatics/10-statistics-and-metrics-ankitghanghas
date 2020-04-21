@@ -107,17 +107,17 @@ def GetAnnualStatistics(DataDF):
     annual values for each water year.  Water year, as defined by the USGS,
     starts on October 1."""
 
-    col_name=['site_no', 'Mean Flow', 'Peak Flow', 'Median', 'Coeff Var', 'Skew', 'TQmean', 'R-B Index', '7Q', '3xMedian']
+    col_name=['site_no', 'Mean Flow', 'Peak Flow', 'Median Flow', 'Coeff Var', 'Skew', 'Tqmean', 'R-B Index', '7Q', '3xMedian']
     data_1= DataDF.resample('AS-OCT').mean()
     WYDataDF = pd.DataFrame(0, index = data_1.index, columns=col_name)
     df=DataDF.resample('AS-OCT')
     WYDataDF['site_no'] = df['site_no'].mean()
     WYDataDF['Mean Flow'] = df['Discharge'].mean()
     WYDataDF['Peak Flow'] = df['Discharge'].max()
-    WYDataDF['Median'] = df['Discharge'].median()
+    WYDataDF['Median Flow'] = df['Discharge'].median()
     WYDataDF['Coeff Var'] = ((df['Discharge'].std())/(df['Discharge'].mean()))*100
     WYDataDF['Skew'] = df.apply({'Discharge':lambda x: stats.skew(x, nan_policy='omit',bias=False)}, raw=True)
-    WYDataDF['TQmean'] = df.apply({'Discharge': lambda x: CalcTqmean(x)})
+    WYDataDF['Tqmean'] = df.apply({'Discharge': lambda x: CalcTqmean(x)})
     WYDataDF['R-B Index'] = df.apply({'Discharge': lambda x: CalcRBindex(x)})
     WYDataDF['7Q'] = df.apply({'Discharge': lambda x: Calc7Q(x)})
     WYDataDF['3xMedian'] = df.apply({'Discharge': lambda x: CalcExceed3TimesMedian(x)})
@@ -129,7 +129,7 @@ def GetMonthlyStatistics(DataDF):
     for the given streamflow time series.  Values are returned as a dataframe
     of monthly values for each year."""
     
-    col_name = ['site_no', 'Mean Flow', 'Coeff Var', 'TQmean', 'R-B Index']
+    col_name = ['site_no', 'Mean Flow', 'Coeff Var', 'Tqmean', 'R-B Index']
     
     monthlydata= DataDF.resample('BMS').mean()
     MoDataDF = pd.DataFrame(index = monthlydata.index, columns=col_name)
@@ -138,7 +138,7 @@ def GetMonthlyStatistics(DataDF):
     MoDataDF['site_no'] = df['site_no'].mean()
     MoDataDF['Mean Flow'] = df['Discharge'].mean()
     MoDataDF['Coeff Var'] = ((df['Discharge'].std())/df['Discharge'].mean())*100
-    MoDataDF['TQmean'] = df.apply({'Discharge': lambda x: CalcTqmean(x)})
+    MoDataDF['Tqmean'] = df.apply({'Discharge': lambda x: CalcTqmean(x)})
     MoDataDF['R-B Index'] = df.apply({'Discharge': lambda x: CalcRBindex(x)})
 
     return ( MoDataDF )
@@ -157,7 +157,7 @@ def GetMonthlyAverages(MoDataDF):
     statistics and metrics.  The routine returns an array of mean values 
     for each metric in the original dataframe."""
     
-    col_name = ['site_no', 'Mean Flow', 'Coeff Var', 'TQmean', 'R-B Index']
+    col_name = ['site_no', 'Mean Flow', 'Coeff Var', 'Tqmean', 'R-B Index']
     MonthlyAverages = pd.DataFrame(0, index=range(1,13), columns = col_name)
     a=[3,4,5,6,7,8,9,10,11,0,1,2]
     idx=0
@@ -165,7 +165,7 @@ def GetMonthlyAverages(MoDataDF):
         MonthlyAverages.iloc[idx,0] = MoDataDF['site_no'][::12].mean()
         MonthlyAverages.iloc[idx,1] = MoDataDF['Mean Flow'][a[idx]::12].mean()
         MonthlyAverages.iloc[idx,2] = MoDataDF['Coeff Var'][a[idx]::12].mean()
-        MonthlyAverages.iloc[idx,3] = MoDataDF['TQmean'][a[idx]::12].mean()
+        MonthlyAverages.iloc[idx,3] = MoDataDF['Tqmean'][a[idx]::12].mean()
         MonthlyAverages.iloc[idx,4] = MoDataDF['R-B Index'][a[idx]::12].mean()
         idx +=1
     return( MonthlyAverages )
