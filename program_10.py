@@ -131,9 +131,9 @@ def GetMonthlyStatistics(DataDF):
     
     col_name = ['site_no', 'Mean Flow', 'Coeff Var', 'TQmean', 'R-B Index']
     
-    monthlydata= DataDF.resample('M').mean()
-    MoDataDF = pd.DataFrame(0, index = monthlydata.index, columns=col_name)
-    df= DataDF.resample('M')
+    monthlydata= DataDF.resample('BMS').mean()
+    MoDataDF = pd.DataFrame(index = monthlydata.index, columns=col_name)
+    df= DataDF.resample('BMS')
 
     MoDataDF['site_no'] = df['site_no'].mean()
     MoDataDF['Mean Flow'] = df['Discharge'].mean()
